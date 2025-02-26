@@ -5,7 +5,7 @@ import { Mail, Phone, FileText } from "lucide-react";
 import type { Candidate } from "@shared/schema";
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import PdfViewer from "./pdf-viewer";
+import PdfViewer from "@/components/pdf-viewer";
 
 interface CandidateCardProps {
   candidate: Candidate;
@@ -83,7 +83,9 @@ export default function CandidateCard({ candidate, onStatusChange }: CandidateCa
 
       <Dialog open={showResume} onOpenChange={setShowResume}>
         <DialogContent className="max-w-4xl h-[80vh]">
-          <PdfViewer pdfPath={candidate.resumePath!} />
+          {showResume && candidate.resumePath && (
+            <PdfViewer pdfPath={candidate.resumePath} />
+          )}
         </DialogContent>
       </Dialog>
     </>
