@@ -19,7 +19,13 @@ export class MemStorage implements IStorage {
 
   async createCandidate(insertCandidate: InsertCandidate): Promise<Candidate> {
     const id = this.currentId++;
-    const candidate: Candidate = { ...insertCandidate, id };
+    const candidate: Candidate = {
+      ...insertCandidate,
+      id,
+      status: insertCandidate.status || "new",
+      resumePath: insertCandidate.resumePath || null,
+      notes: insertCandidate.notes || null
+    };
     this.candidates.set(id, candidate);
     return candidate;
   }
@@ -43,7 +49,7 @@ export class MemStorage implements IStorage {
   async updateCandidateStatus(id: number, status: string): Promise<Candidate | undefined> {
     const candidate = this.candidates.get(id);
     if (!candidate) return undefined;
-    
+
     const updatedCandidate = { ...candidate, status };
     this.candidates.set(id, updatedCandidate);
     return updatedCandidate;

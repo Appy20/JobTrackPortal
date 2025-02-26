@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as pdfjs from 'pdfjs-dist';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -15,20 +15,20 @@ export default function PdfViewer({ pdfPath }: PdfViewerProps) {
       try {
         const pdf = await pdfjs.getDocument(pdfPath).promise;
         const page = await pdf.getPage(1);
-        
+
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           const context = canvas.getContext('2d');
-          
+
           const viewport = page.getViewport({ scale: 1.5 });
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          
+
           await page.render({
             canvasContext: context!,
             viewport: viewport
           }).promise;
-          
+
           setLoading(false);
         }
       } catch (error) {

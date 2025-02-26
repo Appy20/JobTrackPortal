@@ -5,9 +5,10 @@ import multer from "multer";
 import path from "path";
 import { insertCandidateSchema } from "@shared/schema";
 
+// Set up multer for file uploads
 const upload = multer({
   storage: multer.memoryStorage(),
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req: any, file: any, cb: any) => {
     if (file.mimetype === "application/pdf") {
       cb(null, true);
     } else {
@@ -17,11 +18,11 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express) {
-  app.post("/api/candidates", upload.single("resumeFile"), async (req, res) => {
+  app.post("/api/candidates", upload.single("resumeFile"), async (req: any, res) => {
     try {
       const candidateData = JSON.parse(req.body.data);
       const parsedData = insertCandidateSchema.parse(candidateData);
-      
+
       let resumePath = undefined;
       if (req.file) {
         // In a real app, save the file and store the path
@@ -32,7 +33,7 @@ export async function registerRoutes(app: Express) {
         ...parsedData,
         resumePath,
       });
-      
+
       res.json(candidate);
     } catch (error) {
       res.status(400).json({ error: "Invalid candidate data" });
@@ -56,7 +57,7 @@ export async function registerRoutes(app: Express) {
   app.patch("/api/candidates/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     if (!status) {
       return res.status(400).json({ error: "Status required" });
     }
