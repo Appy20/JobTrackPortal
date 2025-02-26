@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import * as pdfjs from 'pdfjs-dist';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Initialize PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
 interface PdfViewerProps {
   pdfPath: string;
 }
@@ -33,6 +36,7 @@ export default function PdfViewer({ pdfPath }: PdfViewerProps) {
         }
       } catch (error) {
         console.error('Error loading PDF:', error);
+        setLoading(false);
       }
     };
 
