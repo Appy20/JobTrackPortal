@@ -1,11 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import type { Candidate } from "@shared/schema";
+import { LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { data: candidates } = useQuery<Candidate[]>({
     queryKey: ["/api/candidates"],
   });
+
+  const { logoutMutation } = useAuth();
 
   const stats = {
     total: candidates?.length ?? 0,
@@ -17,8 +22,16 @@ export default function Dashboard() {
 
   return (
     <div className="p-8">
-      <div className="flex items-center mb-8">
+      <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Button 
+          variant="outline" 
+          onClick={() => logoutMutation.mutate()}
+          disabled={logoutMutation.isPending}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Sign Out
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
