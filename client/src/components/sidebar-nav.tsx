@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "wouter";
 import { Users, UserPlus, LayoutDashboard, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,73 +11,91 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navItems = [
-  {
-    title: "Dashboard",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Candidates",
-    href: "/candidates",
-    icon: Users,
-  },
-  {
-    title: "Add Candidate",
-    href: "/add-candidate",
-    icon: UserPlus,
-  },
-];
-
-export default function SidebarNav() {
-  const { user, logoutMutation } = useAuth();
+export function SidebarNav() {
   const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
-  // Move rendering logic into a conditional rather than early return
-  if (user) {
-    return (
-      <div className="border-r bg-card w-64 p-4 space-y-4">
-        <div className="flex items-center justify-between px-2 py-4">
-          <div className="flex items-center space-x-2">
-            <Users className="h-6 w-6" />
-            <h1 className="text-xl font-bold">ATS Portal</h1>
-          </div>
-        </div>
+  if (!user) return null;
 
-        <div className="px-2 py-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start">
-                {user.username}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <nav className="space-y-2">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <a
-                className={cn(
-                  "flex items-center space-x-2 px-2 py-2 rounded-lg hover:bg-accent",
-                  location === item.href && "bg-accent"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.title}</span>
-              </a>
-            </Link>
-          ))}
-        </nav>
+  return (
+    <div className="border-r min-h-screen w-64 p-6 hidden md:block">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold">ATS Portal</h2>
+        <p className="text-sm text-muted-foreground">
+          Welcome, {user.username}
+        </p>
       </div>
-    );
-  }
+      <nav className="space-y-1">
+        <NavItem 
+          href="/" 
+          icon={<LayoutDashboard className="mr-2 h-4 w-4" />}
+          isActive={location === "/"}
+        >
+          Dashboard
+        </NavItem>
+        
+        <NavItem 
+          href="/candidates" 
+          icon={<Users className="mr-2 h-4 w-4" />}
+          isActive={location === "/candidates"}
+        >
+          Candidates
+        </NavItem>
+        
+        <NavItem 
+          href="/add-candidate" 
+          icon={<UserPlus className="mr-2 h-4 w-4" />}
+          isActive={location === "/add-candidate"}
+        >
+          Add Candidate
+        </NavItem>
+      </nav>
+      <div className="mt-auto pt-8">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full">
+              Account
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              onClick={() => logoutMutation.mutate()}
+              className="cursor-pointer"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
 
-  return null;
+function NavItem({ 
+  href, 
+  icon, 
+  children, 
+  isActive 
+}: { 
+  href: string; 
+  icon: React.ReactNode; 
+  children: React.ReactNode; 
+  isActive: boolean;
+}) {
+  return (
+    <Link href={href}>
+      <div
+        className={cn(
+          "flex items-center px-3 py-2 text-sm rounded-md",
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-muted cursor-pointer"
+        )}
+      >
+        {icon}
+        {children}
+      </div>
+    </Link>
+  );
 }
