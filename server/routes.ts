@@ -4,6 +4,15 @@ import { storage } from "./storage";
 import multer from "multer";
 import path from "path";
 import { insertCandidateSchema } from "@shared/schema";
+import { setupAuth } from "./auth";
+
+// Middleware to check if user is authenticated
+function isAuthenticated(req: any, res: any, next: any) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+}
 
 // Set up multer for file uploads
 const upload = multer({
@@ -18,7 +27,11 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express) {
-  app.post("/api/candidates", upload.single("resumeFile"), async (req: any, res) => {
+  // Set up authentication routes
+  setupAuth(app);
+
+  // Protected routes
+  app.post("/api/candidates", isAuthenticated, upload.single("resumeFile"), async (req: any, res) => {
     try {
       const candidateData = JSON.parse(req.body.data);
       const parsedData = insertCandidateSchema.parse(candidateData);
@@ -40,12 +53,12 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/candidates", async (_req, res) => {
+  app.get("/api/candidates", isAuthenticated, async (_req, res) => {
     const candidates = await storage.getCandidates();
     res.json(candidates);
   });
 
-  app.get("/api/candidates/search", async (req, res) => {
+  app.get("/api/candidates/search", isAuthenticated, async (req, res) => {
     const query = req.query.q as string;
     if (!query) {
       return res.status(400).json({ error: "Search query required" });
@@ -54,7 +67,7 @@ export async function registerRoutes(app: Express) {
     res.json(results);
   });
 
-  app.patch("/api/candidates/:id/status", async (req, res) => {
+  app.patch("/api/candidates/:id/status", isAuthenticated, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
