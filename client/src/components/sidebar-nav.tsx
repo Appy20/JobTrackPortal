@@ -2,8 +2,8 @@
 import { Link, useLocation } from "wouter";
 import { Users, UserPlus, LayoutDashboard, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function SidebarNav() {
+export default function SidebarNav() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
 
